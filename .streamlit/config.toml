@@ -1,0 +1,15 @@
+[theme]
+primaryColor = "#4F46E5"               # Deep Indigo 600
+backgroundColor = "#F8FAFC"            # Slate 50 background
+secondaryBackgroundColor = "#FFFFFF"  # Crisp White card surfaces
+textColor = "#0F172A"                  # Slate 900 high-contrast text
+font = "sans serif"
+
+[server]
+headless = true
+enableCORS = false
+enableXsrfProtection = true
+maxUploadSize = 5
+
+[browser]
+gatherUsageStats = false
