@@ -21,7 +21,6 @@ from phase_4_app_interface.views import (
     render_results_dashboard,
     render_history_screen,
     render_groq_sidebar,
-    render_groq_ai_study_plan,
 )
 
 # 1. Page Configuration
@@ -82,7 +81,6 @@ def main():
 
         readiness_result = calculate_readiness(st.session_state.user_answers, QUESTIONS)
         render_results_dashboard(readiness_result, QUESTIONS)
-        render_groq_ai_study_plan(readiness_result, QUESTIONS)
 
     elif st.session_state.page == "history":
         render_history_screen(st.session_state.history, QUESTIONS)

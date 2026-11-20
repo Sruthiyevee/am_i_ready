@@ -23,7 +23,6 @@ from views import (
     render_results_dashboard,
     render_history_screen,
     render_groq_sidebar,
-    render_groq_ai_study_plan,
 )
 
 st.set_page_config(
@@ -80,7 +79,6 @@ def main():
 
         readiness_result = calculate_readiness(st.session_state.user_answers, QUESTIONS)
         render_results_dashboard(readiness_result, QUESTIONS)
-        render_groq_ai_study_plan(readiness_result, QUESTIONS)
 
     elif st.session_state.page == "history":
         render_history_screen(st.session_state.history, QUESTIONS)

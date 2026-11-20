@@ -22,11 +22,13 @@ except ImportError:
     Groq = None
 
 # Default Recommended Groq Models
-DEFAULT_MODEL = "llama-3.3-70b-versatile"
-FAST_MODEL = "llama-3.1-8b-instant"
+DEFAULT_MODEL = os.getenv("GROQ_MODEL", "qwen/qwen3.8-27b")
+FAST_MODEL = "openai/gpt-oss-120b"
 AVAILABLE_MODELS = [
-    ("llama-3.3-70b-versatile", "Llama 3.3 70B (High Precision & Reasoning)"),
-    ("llama-3.1-8b-instant", "Llama 3.1 8B (Ultra Fast, Low Latency)"),
+    ("qwen/qwen3.8-27b", "Qwen 3.8 27B (Fast & Multilingual German)"),
+    ("openai/gpt-oss-120b", "GPT-OSS 120B (High Reasoning)"),
+    ("llama-3.3-70b-versatile", "Llama 3.3 70B (Versatile)"),
+    ("llama-3.1-8b-instant", "Llama 3.1 8B (Instant)"),
 ]
 
 

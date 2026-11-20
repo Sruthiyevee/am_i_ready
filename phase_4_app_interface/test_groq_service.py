@@ -177,15 +177,3 @@ class TestGroqUIComponents:
                 views.render_groq_sidebar()
                 # Verify offline notice or API key expander rendered
                 assert mock_exp.called
-
-    @patch("streamlit.markdown")
-    @patch("streamlit.button")
-    def test_render_groq_ai_study_plan_no_key_shows_prompt(self, mock_btn, mock_md):
-        fake_state = MockSessionState({})
-        res = calculate_readiness({}, QUESTIONS)
-        with patch.object(views.st, "session_state", fake_state):
-            with patch("utils.groq_service.get_groq_api_key", return_value=None):
-                views.render_groq_ai_study_plan(res, QUESTIONS)
-                # No button should be clicked; prompt box should render
-                md_calls = [str(c[0][0]) for c in mock_md.call_args_list if c[0]]
-                assert any("Groq LLM is not connected yet" in m for m in md_calls)

@@ -477,28 +477,6 @@ def render_results_dashboard(result: Dict[str, Any], questions: List[Dict[str, A
 </div>
 </div>""", unsafe_allow_html=True)
 
-            # Groq AI Deep Dive Explanation (Available when Groq API Key is configured)
-            if is_groq_available():
-                deep_dive_cache_key = f"groq_deep_dive_{qid}_{'en' if use_english else 'de'}"
-                cached_deep_dive = get_state(deep_dive_cache_key)
-
-                with st.expander(f"🤖 Groq AI Tutor: Deep Dive on Question {qid}", expanded=bool(cached_deep_dive)):
-                    if not cached_deep_dive:
-                        current_model = get_state("groq_selected_model", DEFAULT_MODEL)
-                        if st.button(f"Generate Groq AI Explanation for Q{qid}", key=f"btn_groq_q_{qid}"):
-                            with st.spinner(f"Groq AI Tutor is analyzing Question {qid}..."):
-                                dd_text = explain_question_deep_dive(
-                                    q, user_opt_idx, language="English" if use_english else "Deutsch", model=current_model
-                                )
-                                set_state(deep_dive_cache_key, dd_text)
-                                st.rerun()
-                    else:
-                        st.markdown(f"""
-                        <div class="ai-response-box">
-                            {cached_deep_dive}
-                        </div>
-                        """, unsafe_allow_html=True)
-
     # 5. Bottom Action Controls
     if not is_historical:
         st.markdown("<div style='margin-top: 1.85rem;'></div>", unsafe_allow_html=True)
@@ -756,55 +734,4 @@ def render_groq_sidebar():
                 {last_ans}
             </div>
             """, unsafe_allow_html=True)
-
-
-def render_groq_ai_study_plan(result: Dict[str, Any], questions: List[Dict[str, Any]]):
-    """Renders the Groq AI Study Coach & Personalized 7-Day Exam Strategy Card."""
-    st.markdown("""
-    <div class="ai-coach-card">
-        <div class="ai-badge">✨ Groq AI Study Coach & Exam Strategy</div>
-        <h3 style="margin: 0 0 0.45rem 0; font-size: 1.25rem; font-weight: 800; color: #18181B;">
-            Personalized 7-Day Exam Blueprint
-        </h3>
-        <p style="margin: 0 0 1rem 0; font-size: 0.92rem; color: #52525B; line-height: 1.5;">
-            Let Groq's high-speed AI diagnose your exact weaknesses, synthesize a tailored 7-day study routine,
-            and provide memorable German grammar mnemonics for Goethe/ÖSD A1.
-        </p>
-    """, unsafe_allow_html=True)
-
-    if not is_groq_available():
-        st.markdown("""
-        <div class="ai-key-box">
-            🔑 <strong>Groq LLM is not connected yet:</strong><br/>
-            Enter your free Groq API key in the sidebar or configure <code>GROQ_API_KEY</code> in your <code>.env</code> file to generate your custom AI study plan.
-            <div style="margin-top:0.35rem;">
-                👉 <a href="https://console.groq.com/keys" target="_blank" style="color:#B45309; font-weight:700;">Get a free API key at console.groq.com</a>
-            </div>
-        </div>
-        </div>
-        """, unsafe_allow_html=True)
-        return
-
-    study_plan_key = f"groq_study_plan_{result['overall_score']}_{result['tier']}"
-    plan_content = get_state(study_plan_key)
-
-    current_model = get_state("groq_selected_model", DEFAULT_MODEL)
-    model_name_short = "Llama 3.3 70B" if "70b" in current_model else "Llama 3.1 8B"
-
-    btn_label = "🔄 Regenerate AI Study Plan" if plan_content else f"🚀 Generate AI Study Plan ({model_name_short})"
-    if st.button(btn_label, key="btn_gen_study_plan", type="primary", use_container_width=True):
-        with st.spinner("🤖 Groq AI Coach is compiling your personalized 7-day study plan..."):
-            user_answers = get_state("user_answers", {})
-            plan_content = generate_study_plan(result, questions, user_answers, model=current_model)
-            set_state(study_plan_key, plan_content)
-            st.rerun()
-
-    if plan_content:
-        st.markdown(f"""
-        <div class="ai-response-box">
-            {plan_content}
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("</div>", unsafe_allow_html=True)
 
