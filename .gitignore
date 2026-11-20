@@ -23,15 +23,32 @@ wheels/
 .installed.cfg
 *.egg
 
-# Streamlit
+# Streamlit Secrets & Config
 .streamlit/secrets.toml
+secrets.toml
 
-# Environment variables & OS files
+# Environment variables & API keys (Never commit secrets to git!)
 .env
 .env.*
+*.env
+.env.local
+.env.*.local
+*.key
+*_key.txt
+*api_key*.txt
+*groq_key*
+
+# Whitelist example / template files
+!.env.example
+!.env.sample
+
+# OS generated files
 .DS_Store
 Thumbs.db
 
 # IDEs
 .idea/
 .vscode/
+
+# Pytest
+.pytest_cache/

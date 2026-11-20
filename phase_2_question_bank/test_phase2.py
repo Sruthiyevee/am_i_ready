@@ -1,6 +1,7 @@
 """
 test_phase2.py - Comprehensive Unit Tests for Phase 2 Question Bank
-Verifies schema, authenticity, answer options, distribution, and lookup helpers.
+Verifies schema, authenticity, answer options, distribution, lookup helpers,
+and bilingual (German/English) explanations.
 """
 
 import os
@@ -88,9 +89,20 @@ class TestQuestionSchema:
             f"Q{q['id']} invalid correct_answer_index: {q['correct_answer_index']}"
         )
 
-        # 6. Explanation
+        # 6. Explanations (Bilingual support)
         assert isinstance(q["explanation"], str) and len(q["explanation"].strip()) > 25, (
-            f"Q{q['id']} explanation must be informative (>25 chars)"
+            f"Q{q['id']} default explanation must be informative (>25 chars)"
+        )
+        assert isinstance(q["explanation_en"], str) and len(q["explanation_en"].strip()) > 30, (
+            f"Q{q['id']} English explanation must be informative (>30 chars)"
+        )
+        assert isinstance(q["explanation_de"], str) and len(q["explanation_de"].strip()) > 25, (
+            f"Q{q['id']} German explanation must be informative (>25 chars)"
+        )
+
+        # 7. English Prompt Translation
+        assert isinstance(q.get("prompt_en"), str) and len(q["prompt_en"].strip()) > 5, (
+            f"Q{q['id']} missing English prompt translation"
         )
 
     def test_reading_questions_have_context_snippets(self):

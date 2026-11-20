@@ -1,3 +1,5 @@
 # Am I Exam-Ready? (A1 German Readiness Check)
 # Dependencies for Streamlit Community Cloud and local execution
 streamlit>=1.35.0
+groq>=0.11.0
+python-dotenv>=1.0.0

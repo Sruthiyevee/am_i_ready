@@ -1,7 +1,7 @@
-# Phase 4: Interactive Application Screens
+# Phase 4: App Interface & Views
 
 ## Overview
-Phase 4 provides the full interactive Streamlit interface for **"Am I Exam-Ready?"** across three modular views:
+Phase 4 provides the complete mobile-optimized application interface for **"Am I Exam-Ready?"** implemented in Streamlit:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -11,13 +11,13 @@ Phase 4 provides the full interactive Streamlit interface for **"Am I Exam-Ready
 │   - Value Prop        - 1-question view       - Hero Verdict│
 │   - 3-Skill preview   - Progress bar          - Skill Meters│
 │   - Primary CTA       - Reading context box   - Action Cards│
-│                       - Back/Next validation  - Answer review│
+│   - Review Mock Tests - Back/Next validation  - Answer review│
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 1. Views Implemented in `views.py`
+## 1. Streamlit Views Implemented in `views.py`
 
 ### 1.1 `render_landing_screen()`
 - German flag ribbon accent & Goethe/ÖSD authority pill.
@@ -40,11 +40,21 @@ Phase 4 provides the full interactive Streamlit interface for **"Am I Exam-Ready
 - **Hero Verdict Card**: Large status badge (Emerald, Amber, Rose), overall percentage, fractional score (e.g. `10/12`), and 1-sentence decisive booking verdict.
 - **Skill Breakdown**: 3 cards for Vocabulary, Grammar, and Reading with percentage bars and status badges (*Strong*, *Passing*, *Needs Work*).
 - **Personalized Focus Areas**: 2–3 actionable cards mapped to missed subtopics.
-- **Collapsible Answer Review**: Accordion to inspect all 12 questions with user answer, correct answer, status icon, and full grammatical explanations.
-- **Retake Action**: *"🔄 Retake Readiness Check"* resetting all session state cleanly.
+- **Bilingual Explanation Switcher**: Interactive `st.radio` allowing learners to switch answer explanations between **🇬🇧 English** and **🇩🇪 Deutsch** on the fly.
+- **Collapsible Answer Review**: Accordion to inspect all 12 questions with user answer, correct answer, status icon, and full grammatical explanations in the chosen language.
+- **Actions**:
+  - *"🔄 Retake Diagnostic Check"* resetting all session state cleanly.
+  - *"📜 View Past Test History"* navigating to the historical review dashboard.
+
+### 1.4 `render_history_screen()`
+- **No Login Required**: Pre-loaded with realistic learner mock attempts illustrating progression over time (e.g. 41.7% Baseline → 66.7% Mid-Prep → 83.3% Recent Ready).
+- **Progression Overview**: 3 KPI metric tiles showing Best Score, Average Score, and Total Attempts completed.
+- **Attempt Selector**: Interactive dropdown or radio selector displaying timestamps, tiers, scores, and learner reflection notes.
+- **Detailed Attempt Review**: Re-renders the complete diagnostic dashboard and collapsible question-by-question review (with bilingual explanation toggle) for the selected past test.
+- **Navigation**: Instant return buttons to retake the quiz or navigate back to the landing screen.
 
 ---
 
 ## 2. Unit Test Verification
 - File: `phase_4_app_interface/test_phase4.py`
-- **8 / 8 tests passed**: Syntax, export verification, landing CTA state transition, quiz navigation forward/backward, validation guard, quiz completion, and dashboard retake reset.
+- **10 / 10 tests passed**: Syntax, export verification, landing CTA state transition, history screen navigation, quiz navigation forward/backward, validation guard, quiz completion, dashboard retake reset, bilingual explanation switching, and history screen progression rendering.

@@ -32,6 +32,11 @@ class MockSession(dict):
         self[name] = value
 
 
+def mock_columns_factory(spec):
+    count = len(spec) if isinstance(spec, list) else spec
+    return [MagicMock() for _ in range(count)]
+
+
 class TestEndToEndPersonaJourneys:
     """Simulate authentic learner scenarios from start to finish."""
 
@@ -94,7 +99,6 @@ class TestEndToEndPersonaJourneys:
 
     def test_persona_c_borderline_candidate(self):
         """Persona C scores 9/12 (75%): Amber 'Almost Ready' across all skills."""
-        # Miss 1 in each category: Q3 (Vocab), Q6 (Grammar), Q10 (Reading)
         answers = {}
         for q in QUESTIONS:
             if q["id"] in [3, 6, 10]:
@@ -112,7 +116,6 @@ class TestEndToEndPersonaJourneys:
 
     def test_persona_d_early_learner_not_ready(self):
         """Persona D scores 5/12 (41.7% < 65%): Red 'Not Ready Yet'."""
-        # Answer only 5 correctly (Q1, Q2, Q5, Q9, Q11)
         answers = {}
         for q in QUESTIONS:
             if q["id"] in [1, 2, 5, 9, 11]:
@@ -150,13 +153,14 @@ class TestDiagnosticLifecycleSimulation:
         })
 
         with patch.object(views.st, "session_state", session):
-            # Step 1: Landing screen -> Click Start
-            mock_button.return_value = True
+            # Step 1: Landing screen -> Click Start (Button 1: Start Quiz, Button 2: History)
+            mock_button.side_effect = [True, False]
             views.render_landing_screen()
             assert session.page == "quiz"
             assert session.current_question_idx == 0
 
             # Step 2: Answer Question 1 (Laib Brot -> index 0) and advance
+            mock_button.side_effect = None
             mock_radio.return_value = 0
             mock_button.return_value = True
             views.render_quiz_screen(QUESTIONS)
@@ -170,20 +174,15 @@ class TestDiagnosticLifecycleSimulation:
             assert session.current_question_idx == 2
 
             # Step 4: Simulate clicking Previous back to Question 2
-            # Set button to trigger previous (first column button)
-            # In render_quiz_screen: previous button triggers decrement
             session.current_question_idx = 1
-            # Verify answer for Q2 is preserved
             assert session.user_answers[2] == 1
 
             # Step 5: Fast forward to Question 12 (last question)
             session.current_question_idx = 11
-            # Fill remaining answers
             for q in QUESTIONS:
                 if q["id"] not in session.user_answers:
                     session.user_answers[q["id"]] = q["correct_answer_index"]
 
-            # Complete question 12
             mock_radio.return_value = QUESTIONS[11]["correct_answer_index"]
             mock_button.return_value = True
             views.render_quiz_screen(QUESTIONS)
@@ -192,17 +191,18 @@ class TestDiagnosticLifecycleSimulation:
     @patch("streamlit.markdown")
     @patch("streamlit.columns")
     @patch("streamlit.expander")
+    @patch("streamlit.radio")
     @patch("streamlit.button")
     @patch("streamlit.rerun")
     def test_results_review_drawer_content_generation(
-        self, mock_rerun, mock_button, mock_expander, mock_columns, mock_markdown
+        self, mock_rerun, mock_button, mock_radio, mock_expander, mock_columns, mock_markdown
     ):
         """Verify results dashboard renders all 12 review items and handles retake."""
-        mock_columns.return_value = [MagicMock(), MagicMock(), MagicMock()]
-        mock_button.return_value = False  # Don't click retake yet
+        mock_columns.side_effect = mock_columns_factory
+        mock_radio.return_value = "🇬🇧 English"
+        mock_button.return_value = False
 
         answers = {q["id"]: q["correct_answer_index"] for q in QUESTIONS}
-        # Miss Q1
         answers[1] = 1
 
         result = calculate_readiness(answers, QUESTIONS)
@@ -216,8 +216,8 @@ class TestDiagnosticLifecycleSimulation:
         with patch.object(views.st, "session_state", session):
             views.render_results_dashboard(result, QUESTIONS)
 
-            # Click Retake Check
-            mock_button.return_value = True
+            # Click Retake Check (Button 1: Retake, Button 2: View Past Test History)
+            mock_button.side_effect = [True, False]
             views.render_results_dashboard(result, QUESTIONS)
             assert session.page == "landing"
             assert session.current_question_idx == 0
